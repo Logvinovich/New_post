@@ -1,0 +1,154 @@
+python manage.py shell
+
+Импортируем модели News_Portal:
+	>>> from News_Portal.models import *
+----
+Создаем пользователей:
+	>>> u1 = User.objects.create_user(username='Anna')
+	>>> u1
+	<User: Anna>
+	>>> u2 = User.objects.create_user(username='Anton')
+	>>> u2
+	<User: Anton>
+	>>> u3 = User.objects.create_user(username='Igor')
+	>>> u3
+	<User: Igor>
+	>>> u4 = User.objects.create_user(username='Oleg')
+        >>> u4
+        <User: Oleg>
+----
+Создаем авторов:
+	>>> Author.objects.create(authoruser=u1)
+	<Author: Anna>
+	>>> Author.objects.create(authoruser=u2)
+	<Author: Anton>
+----
+Создаем категории:
+	>>> Category.objects.create(name_category='IT')
+	<Category: IT>
+	>>> Category.objects.create(name_category='Sport')
+	<Category: Sport>
+	>>> Category.objects.create(name_category='Сartoon')
+	<Category: Сartoon>
+	>>> Category.objects.create(name_category='Games')
+	<Category: Games>
+----
+Создаем посты:
+	>>> Post.objects.create(author=author, choise='NS', head_text='sometitle', body_text='sometext')
+	<Post: Post from 13.07.2023 11:11,Anna,sometitle>
+	>>> Post.objects.create(author=author, choise='TP', head_text='Healthing', body_text='Do sport, be buff')
+	<Post: Post from 13.07.2023 11:12,Anna,Healthing>
+	>>> Post.objects.create(author=author2, choise='TP', head_text='Games', body_text='Best game 10\10')
+	<Post: Post from 13.07.2023 11:12,Anton,Games>
+----
+Применяем метод preview() к постам:
+	>>> Post.objects.get(id=1).preview()
+	'sometext...'
+	>>> Post.objects.get(id=3).preview()
+	'Best game 10\x08...'
+----
+К статьям/новостям присваиваем категории:
+	>>> Post.objects.get(id=1).category.add(Category.objects.get(id=1))
+	>>> Post.objects.get(id=2).category.add(Category.objects.get(id=2))
+	>>> Post.objects.get(id=3).category.add(Category.objects.get(id=3))
+	>>> Post.objects.get(id=1).category.add(Category.objects.get(id=3))
+	>>> Post.objects.get(id=3).category.add(Category.objects.get(id=4))
+----
+Создаем комментарии к статьям/новостям:
+	>>> Comment.objects.create(post=Post.objects.get(id=1), userpost=Author.objects.get(id=1).authoruser, comment_text='greate post')
+	<Comment: 2023-07-13 11:21:24.786077+00:00, Anna>
+	>>> Comment.objects.create(post=Post.objects.get(id=1), userpost=Author.objects.get(id=2).authoruser, comment_text='interesting news')
+	<Comment: 2023-07-13 11:21:48.568971+00:00, Anton>
+	>>> Comment.objects.create(post=Post.objects.get(id=2), userpost=Author.objects.get(id=2).authoruser, comment_text='LoL')
+	<Comment: 2023-07-13 11:22:18.081986+00:00, Anton>
+	>>> Comment.objects.create(post=Post.objects.get(id=3), userpost=Author.objects.get(id=1).authoruser, comment_text='True')
+	<Comment: 2023-07-13 11:23:06.913300+00:00, Anna>
+	>>> Comment.objects.create(post=Post.objects.get(id=3), userpost=Author.objects.get(id=2).authoruser, comment_text='No way')
+	<Comment: 2023-07-13 11:23:25.169715+00:00, Anton>
+----
+Применям функции like() и dislike() к комментариям:
+	>>> Comment.objects.get(id=1).like()
+	>>> Comment.objects.get(id=1).rating
+	1
+	>>> Comment.objects.get(id=1).dislike()
+	>>> Comment.objects.get(id=1).dislike()
+	>>> Comment.objects.get(id=1).rating
+	-1
+	>>> Comment.objects.get(id=2).like()
+	>>> Comment.objects.get(id=2).like()
+	>>> Comment.objects.get(id=2).like()
+	>>> Comment.objects.get(id=3).like()
+	>>> Comment.objects.get(id=3).like()
+	>>> Comment.objects.get(id=4).like()
+	>>> Comment.objects.get(id=5).dislike()
+        >>> Comment.objects.get(id=5).dislike()
+----
+Комментарии для User id 3 и 4:
+	>>> Comment.objects.create(post=Post.objects.get(id=2), userpost=User.objects.get(id=3), comment_text='OMG')
+	<Comment: 2023-07-13 11:40:47.594808+00:00, Anna>
+	>>> Comment.objects.create(post=Post.objects.get(id=1), userpost=User.objects.get(id=4), comment_text='old as f')
+	<Comment: 2023-07-13 11:41:12.314672+00:00, Anton>
+----
+Применям функции like() и dislike() к этим комментариям:
+	>>> Comment.objects.get(id=6).like()
+	>>> Comment.objects.get(id=7).dislike()
+----
+Применям функции like() и dislike() к статьям/новостям:
+	>>> Post.objects.get(id=1).like()
+	>>> Post.objects.get(id=1).like()
+	>>> Post.objects.get(id=1).like()
+	>>> Post.objects.get(id=1).like()
+	>>> Post.objects.get(id=1).like()
+	>>> Post.objects.get(id=1).like()
+        >>> Post.objects.get(id=1).rating
+        6
+	>>> Post.objects.get(id=2).like()
+	>>> Post.objects.get(id=2).like()
+	>>> Post.objects.get(id=2).like()
+	>>> Post.objects.get(id=3).like()
+	>>> Post.objects.get(id=3).like()
+	>>> Post.objects.get(id=3).like()
+	>>> Post.objects.get(id=3).like()
+	>>> Post.objects.get(id=3).like()
+	>>> Post.objects.get(id=3).like()
+	>>> Post.objects.get(id=3).like()
+	>>> Post.objects.get(id=3).like()
+	>>> Post.objects.get(id=3).dislike()
+	>>> Post.objects.get(id=1).dislike()
+	>>> Post.objects.get(id=1).dislike()
+----
+Обновляем рейтинги пользователей:
+	>>> a = Author.objects.get(id=1)
+	>>> a.update_rating()
+	>>> a.ratingauthor
+	22
+	>>> b = Author.objects.get(id=2)
+	>>> b.update_rating()
+	>>> b.ratingauthor
+	23
+----
+Выводим рейтинг лучшего пользователя применяя сортировку:
+	>>> a = Author.objects.order_by('-ratingauthor')[:1]
+	>>> a
+	<QuerySet [<Author: Anton>]>
+----
+Выводим рейтинги всех пользователей применяя сортировку:
+	>>> a = Author.objects.order_by('-ratingauthor')
+	>>> a
+	<QuerySet [<Author: Anton>, <Author: Anna>]>
+----
+Определяем лучшей пост по лайкам и дислайкам:
+	>>> bestPost = Post.objects.order_by('-rating')[:1]
+	>>> bestPost
+	<QuerySet [<Post: Post from 13.07.2023 11:12,Anton,Games>]>
+----
+Выводм дату добавления, username автора, рейтинг, заголовок и превью лучшей статьи
+	>>> Post.objects.all().order_by('-rating').values('createpost_datetime', 'author', 'rating', 'head_text', 'body_text')[0]
+	{'createpost_datetime': datetime.datetime(2023, 7, 13, 11, 12, 23, 343632, tzinfo=datetime.timezone.utc), 'author': 2, 'rating': 7, 'head_text': 'Games', 'bo
+dy_text': 'Best game 10\x08'}
+----
+Выводим все комментарии (дата, пользователь, рейтинг, текст) к этой статье.
+	>>> Comment.objects.all().order_by().values('createcom_datetime', 'userpost', 'post', 'rating', 'comment_text')[0]
+	{'createcom_datetime': datetime.datetime(2023, 7, 13, 11, 21, 24, 786077, tzinfo=datetime.timezone.utc), 'userpost': 3, 'post': 1, 'rating': -1, 'comment_tex
+t': 'greate post'}
+----
